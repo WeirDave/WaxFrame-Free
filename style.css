@@ -645,3 +645,56 @@ header {
 @media (max-width: 1023px) {
   .mobile-blocker { display: flex; }
 }
+
+/* ── 19. HELP & SUPPORT MODAL ── */
+.help-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+  z-index: 8000; backdrop-filter: blur(4px);
+}
+.help-overlay.show { display: block; }
+.help-modal {
+  display: none; position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 520px; max-width: 90vw; max-height: 85vh;
+  background: var(--surface-solid); border: 1px solid var(--border2);
+  border-radius: var(--radius-md); box-shadow: var(--shadow-lg);
+  z-index: 8001; overflow: hidden;
+  flex-direction: column;
+}
+.help-modal.show { display: flex; }
+.help-modal-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+}
+.help-modal-hdr h2 { font-size: 16px; font-weight: 700; color: var(--accent); margin: 0; }
+.help-modal-body { padding: 20px; overflow-y: auto; }
+.help-section { margin-bottom: 20px; }
+.help-section:last-child { margin-bottom: 0; }
+.help-section h3 { font-size: 14px; font-weight: 700; margin: 0 0 8px; color: var(--text); }
+.help-section ul { list-style: none; padding: 0; }
+.help-section li {
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+  font-size: 13px; color: var(--text-dim);
+}
+.help-section li:last-child { border-bottom: none; }
+.help-section li b { color: var(--text); }
+.help-section p { font-size: 13px; color: var(--text-dim); margin: 0 0 8px; }
+.help-section kbd {
+  font-family: var(--font-mono); font-size: 12px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 4px; padding: 1px 5px; color: var(--accent);
+}
+.help-env {
+  font-family: var(--font-mono); font-size: 12px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px; margin: 0 0 10px;
+  white-space: pre-wrap; word-break: break-word;
+  color: var(--text-dim); max-height: 200px; overflow: auto;
+}
+.help-copy-status { font-size: 12px; color: var(--green); margin-left: 8px; }
+.help-links {
+  display: flex; align-items: center; gap: 8px;
+  flex-wrap: wrap; font-size: 13px;
+}
+.help-links a { color: var(--accent); }
+.help-sep { color: var(--muted); }

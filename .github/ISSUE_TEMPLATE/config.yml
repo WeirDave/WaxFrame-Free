@@ -1,0 +1,10 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: "\U0001F41D WaxFrame Professional"
+    url: https://waxframe.com
+    about: Looking for the Pro version with direct AI API integration? Check out WaxFrame Professional.
+
+  - name: "\U0001F512 Report a security vulnerability"
+    url: https://github.com/WeirDave/WaxFrame-Free/security/advisories/new
+    about: Don't open a public issue for security problems. Use private vulnerability reporting so the fix lands before disclosure.

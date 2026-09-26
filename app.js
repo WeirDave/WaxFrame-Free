@@ -1016,6 +1016,57 @@ function initTheme() {
   setTheme(saved);
 }
 
+//─ HELP & SUPPORT ──
+function getDiagnosticInfo() {
+  const lines = [];
+  lines.push('WaxFrame Free v2.0');
+  lines.push('Browser    : ' + navigator.userAgent);
+  lines.push('Platform   : ' + (navigator.platform || 'unknown'));
+  lines.push('Screen     : ' + screen.width + 'x' + screen.height + ' (' + (window.devicePixelRatio || 1) + 'x)');
+  lines.push('Viewport   : ' + window.innerWidth + 'x' + window.innerHeight);
+  lines.push('Running    : ' + (location.protocol === 'file:' ? 'Local file' : location.origin));
+  lines.push('Round      : ' + round);
+  lines.push('Phase      : ' + phase);
+  lines.push('AIs active : ' + getActiveAIs().length + ' of ' + aiList.length);
+  lines.push('Builder    : ' + (builder ? (getAI(builder)?.name || builder) : 'not set'));
+  lines.push('History    : ' + history.length + ' saved rounds');
+  try {
+    const raw = localStorage.getItem(LS);
+    lines.push('Storage    : ' + (raw ? (raw.length / 1024).toFixed(1) + ' KB' : 'empty'));
+  } catch(e) {
+    lines.push('Storage    : error reading');
+  }
+  return lines.join('\n');
+}
+
+function openHelpModal() {
+  document.getElementById('helpEnvBlock').textContent = getDiagnosticInfo();
+  document.getElementById('helpOverlay').classList.add('show');
+  document.getElementById('helpModal').classList.add('show');
+}
+
+function closeHelpModal() {
+  document.getElementById('helpOverlay').classList.remove('show');
+  document.getElementById('helpModal').classList.remove('show');
+  document.getElementById('diagCopyStatus').textContent = '';
+}
+
+function copyDiagnostics() {
+  const info = getDiagnosticInfo();
+  navigator.clipboard.writeText(info).then(() => {
+    document.getElementById('diagCopyStatus').textContent = 'Copied!';
+    toast('📋 Diagnostics copied to clipboard');
+  }).catch(() => {
+    document.getElementById('diagCopyStatus').textContent = 'Copy failed — select and copy manually';
+  });
+}
+
+function openBugReport() {
+  const env = encodeURIComponent(getDiagnosticInfo());
+  const url = 'https://github.com/WeirDave/WaxFrame-Free/issues/new?template=bug_report.yml&environment=' + env;
+  window.open(url, '_blank');
+}
+
 //─ INIT ──
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();

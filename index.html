@@ -52,6 +52,7 @@
     <button class="btn btn-ghost" onclick="importSession()">📂 Import</button>
     <button class="btn btn-ghost" onclick="exportTxt()">💾 Export</button>
     <button class="btn btn-ghost" onclick="clearState()">New Session</button>
+    <button class="btn btn-ghost" onclick="openHelpModal()">Help</button>
     <div class="theme-toggle" id="themeToggle">
       <button class="theme-opt" data-theme="light" data-tooltip="Light mode"        onclick="setTheme('light')" title="Light mode">☀️</button>
       <button class="theme-opt" data-theme="auto"  data-tooltip="Auto (follows OS)" onclick="setTheme('auto')"  title="Auto (follow OS)">⚙️</button>
@@ -232,6 +233,45 @@
   <div class="status-actions">
     <button class="btn btn-sm btn-ghost" id="backRoundBtn" onclick="goBackRound()" disabled>← Prev Round</button>
     <button class="btn btn-sm btn-accent" onclick="buildAndAdvance()">Next Round →</button>
+  </div>
+</div>
+
+<!-- Help & Support modal -->
+<div class="help-overlay" id="helpOverlay" onclick="closeHelpModal()"></div>
+<div class="help-modal" id="helpModal">
+  <div class="help-modal-hdr">
+    <h2>Help & Support</h2>
+    <button class="btn btn-sm btn-ghost" onclick="closeHelpModal()">Close</button>
+  </div>
+  <div class="help-modal-body">
+    <div class="help-section">
+      <h3>Common fixes</h3>
+      <ul>
+        <li><b>Hard refresh.</b> <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> (Win/Linux) or <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> (Mac). Clears stale cached files.</li>
+        <li><b>Check your window size.</b> WaxFrame Free is desktop-only and needs at least 1024px width.</li>
+        <li><b>Try another browser.</b> Recent Chrome, Edge, or Firefox. Private/incognito can block localStorage.</li>
+        <li><b>Export and reimport.</b> If the app is stuck, export your session, clear data, then reimport.</li>
+      </ul>
+    </div>
+    <div class="help-section">
+      <h3>Diagnostic info</h3>
+      <p>Copy this and include it in your bug report.</p>
+      <pre class="help-env" id="helpEnvBlock">Gathering...</pre>
+      <button class="btn btn-sm btn-ghost" id="copyDiagBtn" onclick="copyDiagnostics()">Copy diagnostics</button>
+      <span class="help-copy-status" id="diagCopyStatus"></span>
+    </div>
+    <div class="help-section">
+      <h3>Report a bug</h3>
+      <p>Open a pre-filled bug report on GitHub with your environment info included.</p>
+      <button class="btn btn-sm btn-accent" onclick="openBugReport()">Open bug report on GitHub</button>
+    </div>
+    <div class="help-section help-links">
+      <a href="https://github.com/WeirDave/WaxFrame-Free/issues" target="_blank" rel="noopener">View all issues</a>
+      <span class="help-sep">·</span>
+      <a href="https://github.com/WeirDave/WaxFrame-Free" target="_blank" rel="noopener">GitHub repo</a>
+      <span class="help-sep">·</span>
+      <a href="https://waxframe.com" target="_blank" rel="noopener">WaxFrame Pro</a>
+    </div>
   </div>
 </div>
 

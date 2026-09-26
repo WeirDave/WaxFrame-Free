@@ -1,0 +1,61 @@
+name: Bug report
+description: Something broke or behaved unexpectedly in WaxFrame Free.
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! Please describe what happened, how to reproduce it, and include your environment details.
+
+        > Found a **security** problem? Don't open a public issue — use [private vulnerability reporting](https://github.com/WeirDave/WaxFrame-Free/security/advisories/new) instead.
+
+  - type: textarea
+    id: what_happened
+    attributes:
+      label: What happened
+      description: Describe the problem in your own words.
+      placeholder: "When I pasted a response into the card, ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps that get the problem to happen again.
+      placeholder: |
+        1. Open WaxFrame Free and start a new session
+        2. Paste a document into the Working Document area
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected to happen
+      placeholder: "The prompt should build correctly with all AI responses included."
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: diagnostics
+    attributes:
+      label: Diagnostics
+      description: Use the Help & Support link in the app to copy your diagnostic info and paste it in the Environment field below.
+      options:
+        - label: I copied diagnostic info from the app
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Paste the diagnostic info copied from the app, or fill in manually.
+      render: shell
+      placeholder: |
+        WaxFrame Free v2.0
+        Browser : Chrome 128 / Windows 11
+        Running : GitHub Pages / local file
+    validations:
+      required: true
