@@ -46,6 +46,30 @@ function saveState() {
   try { localStorage.setItem(LS, JSON.stringify(state)); } catch(e) {}
 }
 
+// A session file can be imported from anywhere, and its AI list is rendered
+// into the page and into onclick handlers. Keep only entries whose id is a
+// plain token, whose link is a web address, and whose icon is a web address
+// or one of the bundled images; everything else in an entry is dropped.
+function cleanAIList(list) {
+  if (!Array.isArray(list)) return [];
+  const webUrl = (u) => {
+    try { const p = new URL(String(u)); return /^https?:$/.test(p.protocol) ? p.href : ''; }
+    catch (e) { return ''; }
+  };
+  return list.filter(ai => ai && /^[A-Za-z0-9_-]{1,80}$/.test(String(ai.id)) && webUrl(ai.url))
+    .map(ai => {
+      const icon = String(ai.icon || '');
+      return {
+        id: String(ai.id),
+        name: String(ai.name || ai.id).slice(0, 60),
+        url: webUrl(ai.url),
+        icon: /^images\/[A-Za-z0-9_.-]+$/.test(icon) ? icon : webUrl(icon),
+        active: ai.active !== false,
+        ...(ai.invert ? { invert: true } : {}),
+      };
+    });
+}
+
 function loadState() {
   try {
     const raw = localStorage.getItem(LS);
@@ -57,10 +81,11 @@ function loadState() {
       return;
     }
     const s = JSON.parse(raw);
-    round   = s.round   || 1;
-    phase   = s.phase   || 'draft';
-    history = s.history || [];
-    if (s.aiList && s.aiList.length) aiList = s.aiList;
+    round   = Math.max(1, parseInt(s.round, 10) || 1);
+    phase   = PHASES.some(p => p.id === s.phase) ? s.phase : 'draft';
+    history = Array.isArray(s.history) ? s.history : [];
+    const loadedAIs = cleanAIList(s.aiList);
+    if (loadedAIs.length) aiList = loadedAIs;
     const savedBuilder = s.builder || null;
     builder = (savedBuilder && aiList.find(ai => ai.id === savedBuilder)) ? savedBuilder : null;
 
@@ -349,8 +374,8 @@ function renderAIPanel() {
         <input type="checkbox" ${ai.active ? 'checked' : ''} onchange="toggleAI('${ai.id}', this.checked)">
       </label>
       <div class="ai-row-label ${!ai.active ? 'ai-inactive' : ''}">
-        <img src="${ai.icon}" class="ai-icon${ai.invert ? ' ai-icon-invert' : ''}" onerror="this.style.display='none'">
-        <span class="ai-name">${ai.name}</span>
+        <img src="${esc(ai.icon)}" class="ai-icon${ai.invert ? ' ai-icon-invert' : ''}" onerror="this.style.display='none'">
+        <span class="ai-name">${esc(ai.name)}</span>
       </div>
       <div class="ai-row-actions">
         <button class="ai-act builder-btn" id="setbuild-${ai.id}" onclick="setBuilder('${ai.id}')"
@@ -359,7 +384,7 @@ function renderAIPanel() {
             ? '<span style="font-size:13px;line-height:1;">👑</span><span>Builder</span>'
             : '<span>Set</span><span>Builder</span>'}
         </button>
-        <button class="ai-act ai-act-icon" onclick="openAI('${ai.id}')" title="Open ${ai.name}">↗</button>
+        <button class="ai-act ai-act-icon" onclick="openAI('${ai.id}')" title="Open ${esc(ai.name)}">↗</button>
         <button class="ai-act remove-btn" onclick="removeAI('${ai.id}')" title="Remove">✕</button>
       </div>
     </div>
@@ -373,8 +398,8 @@ function renderResponsePanels() {
   container.innerHTML = active.map(ai => `
     <div class="resp-card ${ai.id === builder ? 'is-builder' : ''}" id="panel-${ai.id}">
       <div class="resp-card-header">
-        <img src="${ai.icon}" class="resp-card-icon${ai.invert ? ' resp-card-icon-invert' : ''}" onerror="this.style.display='none'">
-        <div class="resp-card-name">${ai.name}</div>
+        <img src="${esc(ai.icon)}" class="resp-card-icon${ai.invert ? ' resp-card-icon-invert' : ''}" onerror="this.style.display='none'">
+        <div class="resp-card-name">${esc(ai.name)}</div>
         ${ai.id === builder ? '<div class="resp-card-builder-badge"><span style="font-size:14px;">👑</span><span>Builder</span></div>' : ''}
         <div class="resp-card-status" id="cnt-${ai.id}">Waiting…</div>
       </div>
@@ -490,7 +515,7 @@ function copyAll() {
 
 function openAI(id) {
   const ai = getAI(id);
-  if (ai) window.open(ai.url, '_blank');
+  if (ai && /^https?:\/\//i.test(ai.url)) window.open(ai.url, '_blank');
 }
 
 //─ RESPONSES ──
@@ -816,10 +841,10 @@ function renderHistory() {
       <div class="hist-item">
         <div class="hist-item-hdr" onclick="toggleHist(${idx})">
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-            <span style="background:var(--accent-dim);border:1px solid var(--accent);border-radius:5px;padding:2px 9px;font-size:var(--text-sm);color:var(--accent);font-weight:700;">Round ${h.round}</span>
-            ${phaseLabel ? `<span style="font-size:var(--text-xs);color:var(--muted);border:1px solid var(--border2);border-radius:4px;padding:1px 7px;">${phaseLabel}</span>` : ''}
+            <span style="background:var(--accent-dim);border:1px solid var(--accent);border-radius:5px;padding:2px 9px;font-size:var(--text-sm);color:var(--accent);font-weight:700;">Round ${esc(h.round)}</span>
+            ${phaseLabel ? `<span style="font-size:var(--text-xs);color:var(--muted);border:1px solid var(--border2);border-radius:4px;padding:1px 7px;">${esc(phaseLabel)}</span>` : ''}
             ${h.projectName ? `<span style="font-size:var(--text-sm);color:var(--text);font-weight:600;">${esc(h.projectName)}</span>` : ''}
-            <span style="font-size:var(--text-xs);color:var(--muted);">${filled.length} responses · ${h.timestamp}</span>
+            <span style="font-size:var(--text-xs);color:var(--muted);">${filled.length} responses · ${esc(h.timestamp || '')}</span>
           </div>
           <span style="color:var(--muted);" id="ha${idx}">▼</span>
         </div>
@@ -827,7 +852,7 @@ function renderHistory() {
           ${h.prompt ? `<div class="hist-ai-label" style="color:var(--muted);">Prompt</div><div class="hist-text">${esc(h.prompt)}</div>` : ''}
           ${filled.map(id => {
             const ai = getAI(id);
-            return `<div class="hist-ai-label" style="color:var(--accent);">${ai ? ai.name : id}</div>
+            return `<div class="hist-ai-label" style="color:var(--accent);">${esc(ai ? ai.name : id)}</div>
                     <div class="hist-text">${esc(h.responses[id])}</div>`;
           }).join('')}
           <div style="margin-top:10px;">
@@ -995,7 +1020,8 @@ function toast(msg, ms = 2600) {
 }
 
 function esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 //─ THEME ──
@@ -1019,7 +1045,7 @@ function initTheme() {
 //─ HELP & SUPPORT ──
 function getDiagnosticInfo() {
   const lines = [];
-  lines.push('WaxFrame Free v2.0');
+  lines.push('WaxFrame Free v2.2');
   lines.push('Browser    : ' + navigator.userAgent);
   lines.push('Platform   : ' + (navigator.platform || 'unknown'));
   lines.push('Screen     : ' + screen.width + 'x' + screen.height + ' (' + (window.devicePixelRatio || 1) + 'x)');
