@@ -5,7 +5,14 @@
    ============================================================= */
 
 /* ── 1. FONTS ── */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap');
+/* DM Sans is self-hosted (SIL Open Font License, fonts/OFL.txt), so the page
+   makes no request to a font service. */
+@font-face { font-family: 'DM Sans'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/dm-sans-v17-latin-regular.woff2') format('woff2'); }
+@font-face { font-family: 'DM Sans'; font-style: normal; font-weight: 500; font-display: swap; src: url('fonts/dm-sans-v17-latin-500.woff2') format('woff2'); }
+@font-face { font-family: 'DM Sans'; font-style: normal; font-weight: 600; font-display: swap; src: url('fonts/dm-sans-v17-latin-600.woff2') format('woff2'); }
+@font-face { font-family: 'DM Sans'; font-style: normal; font-weight: 700; font-display: swap; src: url('fonts/dm-sans-v17-latin-700.woff2') format('woff2'); }
+@font-face { font-family: 'DM Sans'; font-style: normal; font-weight: 800; font-display: swap; src: url('fonts/dm-sans-v17-latin-800.woff2') format('woff2'); }
+@font-face { font-family: 'DM Sans'; font-style: normal; font-weight: 900; font-display: swap; src: url('fonts/dm-sans-v17-latin-900.woff2') format('woff2'); }
 
 /* ── 2. CSS RESET ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }

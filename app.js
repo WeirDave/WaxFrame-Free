@@ -1045,7 +1045,7 @@ function initTheme() {
 //─ HELP & SUPPORT ──
 function getDiagnosticInfo() {
   const lines = [];
-  lines.push('WaxFrame Free v2.3');
+  lines.push('WaxFrame Free v2.4');
   lines.push('Browser    : ' + navigator.userAgent);
   lines.push('Platform   : ' + (navigator.platform || 'unknown'));
   lines.push('Screen     : ' + screen.width + 'x' + screen.height + ' (' + (window.devicePixelRatio || 1) + 'x)');
