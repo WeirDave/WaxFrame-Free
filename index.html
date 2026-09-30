@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Strict CSP: no inline script and no network requests. Controls name their
+       handlers in data-click / data-input attributes, dispatched from app.js. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https://www.google.com https://*.gstatic.com; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
   <title>WaxFrame</title>
 
   <!-- Favicon -->
@@ -48,15 +51,15 @@
 
   <!-- Theme toggle + session action buttons -->
   <div class="hdr-btns">
-    <button class="btn btn-ghost" onclick="openHistory()">📋 History</button>
-    <button class="btn btn-ghost" onclick="importSession()">📂 Import</button>
-    <button class="btn btn-ghost" onclick="exportTxt()">💾 Export</button>
-    <button class="btn btn-ghost" onclick="clearState()">New Session</button>
-    <button class="btn btn-ghost" onclick="openHelpModal()">Help</button>
+    <button class="btn btn-ghost" data-click="openHistory">📋 History</button>
+    <button class="btn btn-ghost" data-click="importSession">📂 Import</button>
+    <button class="btn btn-ghost" data-click="exportTxt">💾 Export</button>
+    <button class="btn btn-ghost" data-click="clearState">New Session</button>
+    <button class="btn btn-ghost" data-click="openHelpModal">Help</button>
     <div class="theme-toggle" id="themeToggle">
-      <button class="theme-opt" data-theme="light" data-tooltip="Light mode"        onclick="setTheme('light')" title="Light mode">☀️</button>
-      <button class="theme-opt" data-theme="auto"  data-tooltip="Auto (follows OS)" onclick="setTheme('auto')"  title="Auto (follow OS)">⚙️</button>
-      <button class="theme-opt" data-theme="dark"  data-tooltip="Dark mode"         onclick="setTheme('dark')"  title="Dark mode">🌙</button>
+      <button class="theme-opt" data-theme="light" data-tooltip="Light mode"        data-click="setTheme" data-arg="light" title="Light mode">☀️</button>
+      <button class="theme-opt" data-theme="auto"  data-tooltip="Auto (follows OS)" data-click="setTheme" data-arg="auto"  title="Auto (follow OS)">⚙️</button>
+      <button class="theme-opt" data-theme="dark"  data-tooltip="Dark mode"         data-click="setTheme" data-arg="dark"  title="Dark mode">🌙</button>
     </div>
   </div>
 
@@ -76,7 +79,7 @@
     <div>
       <div class="logo-name">WaxFrame</div>
       <div class="logo-sub">Many minds, one refined result.</div>
-      <div class="logo-sub" style="margin-top:2px;">v2.2</div>
+      <div class="logo-sub" style="margin-top:2px;">v2.3</div>
     </div>
   </div>
 
@@ -85,14 +88,14 @@
     <div class="col-title"><div class="step-num">1</div> Project Details</div>
   </div>
   <div class="project-name-bar">
-    <input id="projectVersion" type="text" placeholder="Version — e.g. v1, v2.1, draft-3" oninput="saveState()" class="version-input">
-    <input id="projectName"    type="text" placeholder="Project name…" oninput="saveState()">
+    <input id="projectVersion" type="text" placeholder="Version — e.g. v1, v2.1, draft-3" data-input="saveState" class="version-input">
+    <input id="projectName"    type="text" placeholder="Project name…" data-input="saveState">
     <div class="goal-wrap">
       <textarea id="projectGoal" class="goal-textarea"
         placeholder="Project goal — what are we trying to create or achieve?"
-        oninput="saveState()"></textarea>
+        data-input="saveState"></textarea>
       <div class="goal-actions">
-        <button class="resp-btn" onclick="document.getElementById('projectGoal').value=''; saveState();">✕ Clear</button>
+        <button class="resp-btn" data-click="clearGoal">✕ Clear</button>
       </div>
     </div>
   </div>
@@ -105,10 +108,10 @@
     </div>
   </div>
   <div class="bee-controls">
-    <button class="btn btn-sm btn-ghost" onclick="toggleAllAIs(true)">☑ All</button>
-    <button class="btn btn-sm btn-ghost" onclick="toggleAllAIs(false)">☐ None</button>
-    <button class="btn btn-sm btn-ghost" onclick="resetToDefaults()">↺ Defaults</button>
-    <button class="btn btn-sm btn-ghost" onclick="showAddAI()">＋ Add</button>
+    <button class="btn btn-sm btn-ghost" data-click="toggleAllAIs" data-arg="true">☑ All</button>
+    <button class="btn btn-sm btn-ghost" data-click="toggleAllAIs" data-arg="false">☐ None</button>
+    <button class="btn btn-sm btn-ghost" data-click="resetToDefaults">↺ Defaults</button>
+    <button class="btn btn-sm btn-ghost" data-click="showAddAI">＋ Add</button>
   </div>
 
   <!-- AI row list — rendered by renderAIPanel() -->
@@ -137,9 +140,9 @@
         <textarea id="masterPrompt" class="master-prompt-ta"
           placeholder="Paste your working document here each round.&#10;&#10;Round 1: paste your first draft.&#10;Subsequent rounds: paste the latest version before gathering feedback."></textarea>
         <div class="doc-card-footer">
-          <button class="resp-btn" onclick="clearPrompt()">✕ Clear</button>
-          <button class="resp-btn" onclick="copyAll()">📋 Copy All</button>
-          <button class="resp-btn" onclick="saveDoc()">💾 Save Doc</button>
+          <button class="resp-btn" data-click="clearPrompt">✕ Clear</button>
+          <button class="resp-btn" data-click="copyAll">📋 Copy All</button>
+          <button class="resp-btn" data-click="saveDoc">💾 Save Doc</button>
         </div>
       </div>
     </div>
@@ -164,7 +167,7 @@
 
     <!-- Primary CTA: build and copy the compiled prompt -->
     <div class="build-prompt-bar">
-      <button class="btn btn-build-big" id="buildPromptBtn" onclick="buildAndCopy()">
+      <button class="btn btn-build-big" id="buildPromptBtn" data-click="buildAndCopy">
         <span style="font-size:20px;line-height:1;">✨</span> Build Prompt [Send to All]
       </button>
     </div>
@@ -188,8 +191,8 @@
         <textarea id="sendBlock" class="send-block-ta"
           placeholder="Hit ⚡ Build Prompt after pasting responses. The full prompt for all AIs appears here."></textarea>
         <div class="send-block-footer">
-          <button class="resp-btn" onclick="clearSendBlock()">✕ Clear</button>
-          <button class="resp-btn" onclick="copySendBlock()">📋 Copy</button>
+          <button class="resp-btn" data-click="clearSendBlock">✕ Clear</button>
+          <button class="resp-btn" data-click="copySendBlock">📋 Copy</button>
         </div>
       </div>
     </div>
@@ -204,13 +207,13 @@
      ============================================================ -->
 
 <!-- Backdrop overlay — closes history drawer on click -->
-<div class="overlay" id="overlay" onclick="closeHistory()"></div>
+<div class="overlay" id="overlay" data-click="closeHistory"></div>
 
 <!-- History drawer — slides in from the right edge -->
 <div id="historyDrawer">
   <div class="drawer-hdr">
     <span>Round History</span>
-    <button class="btn btn-sm btn-ghost" onclick="closeHistory()">✕ Close</button>
+    <button class="btn btn-sm btn-ghost" data-click="closeHistory">✕ Close</button>
   </div>
   <div class="drawer-body" id="historyBody">
     <div class="history-empty">No completed rounds yet.</div>
@@ -231,17 +234,17 @@
   <div class="status-divider">·</div>
   <div class="status-main" id="statusAction">👋 Enter your project details, then click ✨ Build Prompt [Send to All] to start from scratch, or paste a document first</div>
   <div class="status-actions">
-    <button class="btn btn-sm btn-ghost" id="backRoundBtn" onclick="goBackRound()" disabled>← Prev Round</button>
-    <button class="btn btn-sm btn-accent" onclick="buildAndAdvance()">Next Round →</button>
+    <button class="btn btn-sm btn-ghost" id="backRoundBtn" data-click="goBackRound" disabled>← Prev Round</button>
+    <button class="btn btn-sm btn-accent" data-click="buildAndAdvance">Next Round →</button>
   </div>
 </div>
 
 <!-- Help & Support modal -->
-<div class="help-overlay" id="helpOverlay" onclick="closeHelpModal()"></div>
+<div class="help-overlay" id="helpOverlay" data-click="closeHelpModal"></div>
 <div class="help-modal" id="helpModal">
   <div class="help-modal-hdr">
     <h2>Help & Support</h2>
-    <button class="btn btn-sm btn-ghost" onclick="closeHelpModal()">Close</button>
+    <button class="btn btn-sm btn-ghost" data-click="closeHelpModal">Close</button>
   </div>
   <div class="help-modal-body">
     <div class="help-section">
@@ -257,13 +260,13 @@
       <h3>Diagnostic info</h3>
       <p>Copy this and include it in your bug report.</p>
       <pre class="help-env" id="helpEnvBlock">Gathering...</pre>
-      <button class="btn btn-sm btn-ghost" id="copyDiagBtn" onclick="copyDiagnostics()">Copy diagnostics</button>
+      <button class="btn btn-sm btn-ghost" id="copyDiagBtn" data-click="copyDiagnostics">Copy diagnostics</button>
       <span class="help-copy-status" id="diagCopyStatus"></span>
     </div>
     <div class="help-section">
       <h3>Report a bug</h3>
       <p>Open a pre-filled bug report on GitHub with your environment info included.</p>
-      <button class="btn btn-sm btn-accent" onclick="openBugReport()">Open bug report on GitHub</button>
+      <button class="btn btn-sm btn-accent" data-click="openBugReport">Open bug report on GitHub</button>
     </div>
     <div class="help-section help-links">
       <a href="https://github.com/WeirDave/WaxFrame-Free/issues" target="_blank" rel="noopener">View all issues</a>

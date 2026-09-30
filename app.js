@@ -173,7 +173,7 @@ function renderPhaseBar() {
   bar.innerHTML = PHASES.map((p, i) => {
     const cls = i < currentIdx ? 'phase-pip done' : i === currentIdx ? 'phase-pip active' : 'phase-pip';
     return (i > 0 ? '<span class="phase-arrow">›</span>' : '') +
-      `<span class="${cls}" onclick="setPhase('${p.id}')" title="Jump to phase">${p.label}</span>`;
+      `<span class="${cls}" data-click="setPhase" data-arg="${p.id}" title="Jump to phase">${p.label}</span>`;
   }).join('');
   renderPhaseTabs();
 }
@@ -182,7 +182,7 @@ function renderPhaseTabs() {
   const tabs = document.getElementById('phaseTabs');
   if (!tabs) return;
   tabs.innerHTML = `<div class="phase-select-wrap">
-    <select class="phase-select" onchange="setPhaseTab(this.value)">
+    <select class="phase-select" data-change="setPhaseTab">
       ${PHASES.map(p => `<option value="${p.id}" ${p.id === phase ? 'selected' : ''}>${p.icon} ${p.label}</option>`).join('')}
     </select>
   </div>`;
@@ -371,21 +371,21 @@ function renderAIPanel() {
   container.innerHTML = aiList.map(ai => `
     <div class="ai-row ${ai.id === builder ? 'is-builder' : ''}" id="row-${ai.id}">
       <label class="ai-checkbox-wrap" title="${ai.active ? 'Deactivate' : 'Activate'}">
-        <input type="checkbox" ${ai.active ? 'checked' : ''} onchange="toggleAI('${ai.id}', this.checked)">
+        <input type="checkbox" ${ai.active ? 'checked' : ''} data-change="toggleAI" data-arg="${esc(ai.id)}">
       </label>
       <div class="ai-row-label ${!ai.active ? 'ai-inactive' : ''}">
-        <img src="${esc(ai.icon)}" class="ai-icon${ai.invert ? ' ai-icon-invert' : ''}" onerror="this.style.display='none'">
+        <img src="${esc(ai.icon)}" class="ai-icon${ai.invert ? ' ai-icon-invert' : ''}" data-hide-on-error>
         <span class="ai-name">${esc(ai.name)}</span>
       </div>
       <div class="ai-row-actions">
-        <button class="ai-act builder-btn" id="setbuild-${ai.id}" onclick="setBuilder('${ai.id}')"
+        <button class="ai-act builder-btn" id="setbuild-${ai.id}" data-click="setBuilder" data-arg="${esc(ai.id)}"
           style="${ai.id === builder ? 'color:var(--accent);' : ''}" title="Set as Builder">
           ${ai.id === builder
             ? '<span style="font-size:13px;line-height:1;">👑</span><span>Builder</span>'
             : '<span>Set</span><span>Builder</span>'}
         </button>
-        <button class="ai-act ai-act-icon" onclick="openAI('${ai.id}')" title="Open ${esc(ai.name)}">↗</button>
-        <button class="ai-act remove-btn" onclick="removeAI('${ai.id}')" title="Remove">✕</button>
+        <button class="ai-act ai-act-icon" data-click="openAI" data-arg="${esc(ai.id)}" title="Open ${esc(ai.name)}">↗</button>
+        <button class="ai-act remove-btn" data-click="removeAI" data-arg="${esc(ai.id)}" title="Remove">✕</button>
       </div>
     </div>
   `).join('');
@@ -398,14 +398,14 @@ function renderResponsePanels() {
   container.innerHTML = active.map(ai => `
     <div class="resp-card ${ai.id === builder ? 'is-builder' : ''}" id="panel-${ai.id}">
       <div class="resp-card-header">
-        <img src="${esc(ai.icon)}" class="resp-card-icon${ai.invert ? ' resp-card-icon-invert' : ''}" onerror="this.style.display='none'">
+        <img src="${esc(ai.icon)}" class="resp-card-icon${ai.invert ? ' resp-card-icon-invert' : ''}" data-hide-on-error>
         <div class="resp-card-name">${esc(ai.name)}</div>
         ${ai.id === builder ? '<div class="resp-card-builder-badge"><span style="font-size:14px;">👑</span><span>Builder</span></div>' : ''}
         <div class="resp-card-status" id="cnt-${ai.id}">Waiting…</div>
       </div>
-      <textarea id="r-${ai.id}" class="resp-card-ta" placeholder="Ctrl+V to paste response" oninput="updateMeta('${ai.id}')"></textarea>
+      <textarea id="r-${ai.id}" class="resp-card-ta" placeholder="Ctrl+V to paste response" data-input="updateMeta" data-arg="${esc(ai.id)}"></textarea>
       <div class="resp-card-actions">
-        <button class="resp-btn" onclick="clearResp('${ai.id}')">✕ Clear</button>
+        <button class="resp-btn" data-click="clearResp" data-arg="${esc(ai.id)}">✕ Clear</button>
       </div>
     </div>
   `).join('');
@@ -451,8 +451,8 @@ function showAddAI() {
     <input id="newAIName" type="text" placeholder="Name (e.g. DeepSeek)" maxlength="30">
     <input id="newAIUrl"  type="text" placeholder="URL (e.g. https://chat.deepseek.com)" style="margin-top:6px;">
     <div style="display:flex;gap:6px;margin-top:8px;">
-      <button class="btn btn-accent btn-sm" style="flex:1;justify-content:center;" onclick="addAI()">Add to Hive</button>
-      <button class="btn btn-ghost  btn-sm" onclick="document.getElementById('addAIForm').remove()">Cancel</button>
+      <button class="btn btn-accent btn-sm" style="flex:1;justify-content:center;" data-click="addAI">Add to Hive</button>
+      <button class="btn btn-ghost  btn-sm" data-click="cancelAddAI">Cancel</button>
     </div>
   `;
   document.getElementById('aiPanelList').after(form);
@@ -839,7 +839,7 @@ function renderHistory() {
     const phaseLabel = PHASES.find(p => p.id === h.phase)?.label || h.phase || '';
     return `
       <div class="hist-item">
-        <div class="hist-item-hdr" onclick="toggleHist(${idx})">
+        <div class="hist-item-hdr" data-click="toggleHist" data-arg="${idx}">
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
             <span style="background:var(--accent-dim);border:1px solid var(--accent);border-radius:5px;padding:2px 9px;font-size:var(--text-sm);color:var(--accent);font-weight:700;">Round ${esc(h.round)}</span>
             ${phaseLabel ? `<span style="font-size:var(--text-xs);color:var(--muted);border:1px solid var(--border2);border-radius:4px;padding:1px 7px;">${esc(phaseLabel)}</span>` : ''}
@@ -856,7 +856,7 @@ function renderHistory() {
                     <div class="hist-text">${esc(h.responses[id])}</div>`;
           }).join('')}
           <div style="margin-top:10px;">
-            <button class="btn btn-sm" onclick="restoreRound(${idx})">↩ Restore this round</button>
+            <button class="btn btn-sm" data-click="restoreRound" data-arg="${idx}">↩ Restore this round</button>
           </div>
         </div>
       </div>`;
@@ -1045,7 +1045,7 @@ function initTheme() {
 //─ HELP & SUPPORT ──
 function getDiagnosticInfo() {
   const lines = [];
-  lines.push('WaxFrame Free v2.2');
+  lines.push('WaxFrame Free v2.3');
   lines.push('Browser    : ' + navigator.userAgent);
   lines.push('Platform   : ' + (navigator.platform || 'unknown'));
   lines.push('Screen     : ' + screen.width + 'x' + screen.height + ' (' + (window.devicePixelRatio || 1) + 'x)');
@@ -1092,6 +1092,70 @@ function openBugReport() {
   const url = 'https://github.com/WeirDave/WaxFrame-Free/issues/new?template=bug_report.yml&environment=' + env;
   window.open(url, '_blank');
 }
+
+//─ EVENT DISPATCH ──
+// The strict CSP in index.html blocks inline on*= handlers, so controls name
+// their handler in data-click / data-input / data-change (plus data-arg when
+// it takes one) and these delegated listeners run it. The tables are explicit
+// on purpose: markup can only reach the functions listed here.
+const CLICK_ACTIONS = {
+  openHistory:     () => openHistory(),
+  closeHistory:    () => closeHistory(),
+  importSession:   () => importSession(),
+  exportTxt:       () => exportTxt(),
+  clearState:      () => clearState(),
+  openHelpModal:   () => openHelpModal(),
+  closeHelpModal:  () => closeHelpModal(),
+  copyDiagnostics: () => copyDiagnostics(),
+  openBugReport:   () => openBugReport(),
+  setTheme:        el => setTheme(el.dataset.arg),
+  clearGoal:       () => { document.getElementById('projectGoal').value = ''; saveState(); },
+  toggleAllAIs:    el => toggleAllAIs(el.dataset.arg === 'true'),
+  resetToDefaults: () => resetToDefaults(),
+  showAddAI:       () => showAddAI(),
+  addAI:           () => addAI(),
+  cancelAddAI:     () => document.getElementById('addAIForm')?.remove(),
+  setBuilder:      el => setBuilder(el.dataset.arg),
+  openAI:          el => openAI(el.dataset.arg),
+  removeAI:        el => removeAI(el.dataset.arg),
+  clearResp:       el => clearResp(el.dataset.arg),
+  setPhase:        el => setPhase(el.dataset.arg),
+  clearPrompt:     () => clearPrompt(),
+  copyAll:         () => copyAll(),
+  saveDoc:         () => saveDoc(),
+  buildAndCopy:    () => buildAndCopy(),
+  clearSendBlock:  () => clearSendBlock(),
+  copySendBlock:   () => copySendBlock(),
+  goBackRound:     () => goBackRound(),
+  buildAndAdvance: () => buildAndAdvance(),
+  toggleHist:      el => toggleHist(Number(el.dataset.arg)),
+  restoreRound:    el => restoreRound(Number(el.dataset.arg))
+};
+const INPUT_ACTIONS = {
+  saveState:  () => saveState(),
+  updateMeta: el => updateMeta(el.dataset.arg)
+};
+const CHANGE_ACTIONS = {
+  setPhaseTab: el => setPhaseTab(el.value),
+  toggleAI:    el => toggleAI(el.dataset.arg, el.checked)
+};
+function delegate(type, attr, table) {
+  document.addEventListener(type, e => {
+    const el = e.target.closest && e.target.closest('[' + attr + ']');
+    if (!el || el.disabled) return;
+    const fn = table[el.getAttribute(attr)];
+    if (fn) fn(el, e);
+  });
+}
+delegate('click',  'data-click',  CLICK_ACTIONS);
+delegate('input',  'data-input',  INPUT_ACTIONS);
+delegate('change', 'data-change', CHANGE_ACTIONS);
+// error does not bubble, so this listens in the capture phase.
+document.addEventListener('error', e => {
+  if (e.target instanceof HTMLImageElement && e.target.hasAttribute('data-hide-on-error')) {
+    e.target.style.display = 'none';
+  }
+}, true);
 
 //─ INIT ──
 document.addEventListener('DOMContentLoaded', () => {
